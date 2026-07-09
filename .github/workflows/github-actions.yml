@@ -1,18 +1,36 @@
 name: ISSA Member Retriever
-run-name: ${{ github.actor }} is running the ISSA Member Retriever
-on: [push]
+
+on:
+  # Run manually from the Actions tab
+  workflow_dispatch:
+
+  # Run everyday at 6am
+  schedule:
+    - cron: "0 6 * * *"
+
 jobs:
-  Explore-GitHub-Actions:
+  export-members:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v6
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
         run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Run export script
+        env:
+          ISSA_USER: ${{ secrets.ISSA_USER }}
+          ISSA_PASS: ${{ secrets.ISSA_PASS }}
+          MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
+          HEADLESS: "true"
+        run: python get_members.py
+
