@@ -12,7 +12,7 @@ load_dotenv()
 USER = os.getenv("ISSA_USER")
 PASS = os.getenv("ISSA_PASS")
 MAKE_WEBHOOK_URL = os.getenv("MAKE_WEBHOOK_URL")
-HEADLESS = os.getenv("HEADLESS")
+HEADLESS = os.getenv("HEADLESS", "true").lower() == "true"
 
 # Check to ensure required environment variables are found
 if not USER or not PASS or not MAKE_WEBHOOK_URL:
