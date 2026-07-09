@@ -12,6 +12,7 @@ load_dotenv()
 USER = os.getenv("ISSA_USER")
 PASS = os.getenv("ISSA_PASS")
 MAKE_WEBHOOK_URL = os.getenv("MAKE_WEBHOOK_URL")
+HEADLESS = os.getenv("HEADLESS")
 
 # Check to ensure required environment variables are found
 if not USER or not PASS or not MAKE_WEBHOOK_URL:
@@ -32,7 +33,7 @@ def run():
         Path: Location of the downloaded CSV file (downloads/issa_members.csv).
     """
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=False)
+        browser = playwright.chromium.launch(headless=HEADLESS)
         context = browser.new_context()
         page = context.new_page()
 
