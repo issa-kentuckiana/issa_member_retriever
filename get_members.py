@@ -42,8 +42,11 @@ def run():
 
         # Accept cookies
         accept_btn = page.get_by_role("button", name="Accept")
-        if accept_btn.is_visible():
+        try:
+            accept_btn.wait_for(state="visible", timeout=5000)
             accept_btn.click()
+        except Exception:
+            pass  # popup didn't appear this run, that's fine
 
         # Fill credentials and sign in
         page.get_by_role("textbox", name="Username").fill(USER)
