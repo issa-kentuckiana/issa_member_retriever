@@ -49,13 +49,19 @@ def run():
             pass  # popup didn't appear this run, that's fine
 
         # Fill credentials and sign in
-        page.get_by_role("textbox", name="Username").fill(USER)
-        page.get_by_role("textbox", name="Password").fill(PASS)
-        page.get_by_role("button", name="Sign In").click()
+        try:
+            page.get_by_role("textbox", name="Username").fill(USER)
+            page.get_by_role("textbox", name="Password").fill(PASS)
+            page.get_by_role("button", name="Sign In").click()
 
-        # Confirm login succeeded before continuing
-        page.wait_for_selector("#navbar", timeout=15000)
-        print("Login confirmed.")
+            # Confirm login succeeded before continuing
+            page.wait_for_selector("#navbar", timeout=15000)
+            print("Login confirmed.")
+        except Exception:
+            page.screenshot(path="failure_screenshot.png", full_page=True)
+            with open("failure_page.html", "w", encoding="utf-8") as f:
+                f.write(page.content())
+            raise
 
         # Navigate to group
         page.locator("#navbar").get_by_role("link", name=" Groups").click()
