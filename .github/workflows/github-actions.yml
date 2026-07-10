@@ -1,31 +1,24 @@
 name: ISSA Member Retriever
-
 on:
   # Run manually from the Actions tab
   workflow_dispatch:
-
   # Run everyday at 6am
   schedule:
     - cron: "0 6 * * *"
-
 jobs:
   export-members:
     runs-on: ubuntu-latest
-
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           playwright install --with-deps chromium
-
       - name: Run export script
         env:
           ISSA_USER: ${{ secrets.ISSA_USER }}
@@ -33,4 +26,11 @@ jobs:
           MAKE_WEBHOOK_URL: ${{ secrets.MAKE_WEBHOOK_URL }}
           HEADLESS: "true"
         run: python get_members.py
-
+      - name: Upload debug artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-artifacts
+          path: |
+            failure_screenshot.png
+            failure_page.html
